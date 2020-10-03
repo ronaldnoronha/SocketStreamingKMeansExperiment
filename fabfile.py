@@ -90,7 +90,7 @@ def runExperiment(clusters='1'):
             '--master spark://' + str(masterHost) + ':7077 --executor-memory 2g '
             '~/socketstreamingkmeansexperiment_2.12-0.1.jar '
             '192.168.122.121 '
-            '9999'
+            '10000,10005'
         )
     # transfer logs
     # stopMonitor()
@@ -135,7 +135,7 @@ def transferToKafka(filename):
 
 def startKafka():
     kafka.run('tmux new -d -s socket')
-    kafka.run('tmux send -t socket python3\ ~/server.py ENTER')
+    kafka.run('tmux send -t socket python3\ ~/server.py\ 100000\ 192.168.122.121 ENTER')
     
 def stopKafka():
     kafka.run('tmux kill-session -t socket')

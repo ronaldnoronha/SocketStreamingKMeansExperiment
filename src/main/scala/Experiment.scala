@@ -66,7 +66,7 @@ object Experiment {
       ssc.socketTextStream(host, i, StorageLevel.MEMORY_AND_DISK_SER_2)
     }
 
-    val lines = messages.flatMap(_.split(";"))
+    val lines = ssc.union(messages).flatMap(_.split(";"))
 
     val count = ssc.sparkContext.longAccumulator("Counter")
 
@@ -82,7 +82,7 @@ object Experiment {
 
 
     ssc.start()
-    ssc.awaitTermination()
+    ssc.awaitTerminationOrTimeout(30000)
     println("Number of messages: "+ count.value)
 
     for (i <- model.clusterWeights) {

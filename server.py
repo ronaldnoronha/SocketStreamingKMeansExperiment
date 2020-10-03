@@ -21,22 +21,27 @@ def sendMessages(numMsgs, host, port, centers):
     s.bind((host, port))  # Bind to the port
     s.listen()
 
-    c,addr = s.accept()
-    features,_ = createData(numMsgs, 3, centers, 0.65)
-    for i in features:
-        message = ' '.join([str(j) for j in i]) + ';'
-        c.send(message.encode())
-    c.close()
+    while True:
+        c, addr = s.accept()
+        print('Connection received from {}'.format(addr))
+        t1 = time()
+        features,_ = createData(numMsgs, 3, centers, 0.65)
+        for i in features:
+            message = ' '.join([str(j) for j in i]) + ';'
+            c.sendmsg(message.encode())
+        print('{} messages sent from {} in {} seconds'.format(numMsgs, port, time()-t1))
+        c.close()
 
 if __name__ == "__main__":
     numMsgs = int(sys.argv[1])
     host = sys.argv[2]
-    threads = [None]*100
+    numThreads = 4
+    threads = [None]*numThreads
     centers,_ = createData(8, 3, 8, 0.65)
     port = 10000
     t1 = time()
     for i in range(len(threads)):
-        threads[i] = Thread(target=sendMessages, args=(int(numMsgs/100), host, port, centers))
+        threads[i] = Thread(target=sendMessages, args=(int(numMsgs/numThreads), host, port, centers))
         threads[i].start()
         port += 1
 
