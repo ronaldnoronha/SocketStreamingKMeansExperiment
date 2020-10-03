@@ -28,7 +28,7 @@ s.listen() #Wait for the client connection
 while True:
     c,addr = s.accept() #Establish a connection with the client
     print("Got connection from"+ str(addr))
-    features, target = create_data(10000, 3, 8, 0.65)
+    features, target = create_data(30000, 3, 8, 0.65)
     t1 = time()
     for i in features:
         message = ' '.join([str(j) for j in i])+';'
