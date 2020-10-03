@@ -1,8 +1,7 @@
 from sklearn.datasets import make_blobs
+from datetime import datetime
 import socket #import socket module
 from time import time
-from threading import Thread
-import sys
 
 def createData(n_samples, n_features, centers, std):
     features, target = make_blobs(n_samples = n_samples,

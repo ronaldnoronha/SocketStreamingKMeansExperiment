@@ -23,6 +23,7 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.streaming.receiver.Receiver
 import org.apache.spark.mllib.linalg.{Vector, Vectors}
 import org.apache.spark.mllib.clustering.StreamingKMeansModel
+import org.apache.spark.util.SizeEstimator
 
 import scala.util.Random
 
@@ -38,7 +39,7 @@ import scala.util.Random
 object Experiment {
   def main(args: Array[String]): Unit = {
     if (args.length < 2) {
-      System.err.println("Usage: CustomReceiver <hostname> <port>:<port>")
+      System.err.println("Usage: CustomReceiver <hostname> <port>")
       System.exit(1)
     }
 
@@ -69,21 +70,20 @@ object Experiment {
     val lines = ssc.union(messages).flatMap(_.split(";"))
 
     val count = ssc.sparkContext.longAccumulator("Counter")
-
+    val size = ssc.sparkContext.longAccumulator("Size Estimator")
 
     lines.foreachRDD(rdd => {
       val points = rdd.map(_.split(" ").map(_.toDouble)).map(x=>Vectors.dense(x))
       count.add(points.count)
+      size.add(SizeEstimator.estimate(points))
       model.update(points, 1.0, "batches")
-      if (count.value>=100000) {
-        ssc.stop(true, true)
-      }
     })
 
 
     ssc.start()
-    ssc.awaitTerminationOrTimeout(30000)
+    ssc.awaitTerminationOrTimeout(60000)
     println("Number of messages: "+ count.value)
+    println("Size of the data: "+ size.value)
 
     for (i <- model.clusterWeights) {
       println(i)
