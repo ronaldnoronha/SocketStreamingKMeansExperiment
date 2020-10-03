@@ -28,7 +28,7 @@ def sendMessages(numMsgs, host, port, centers):
         features,_ = createData(numMsgs, 3, centers, 0.65)
         for i in features:
             message = ' '.join([str(j) for j in i]) + ';'
-            c.sendmsg(message.encode())
+            c.send(message.encode())
         print('{} messages sent from {} in {} seconds'.format(numMsgs, port, time()-t1))
         c.close()
 

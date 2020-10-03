@@ -87,7 +87,7 @@ def runExperiment(clusters='1'):
     master.run(
             'source /etc/profile && cd $SPARK_HOME && bin/spark-submit '
             '--class Experiment '
-            '--master spark://' + str(masterHost) + ':7077 --executor-memory 2g '
+            '--master spark://' + str(masterHost) + ':7077 --executor-memory 8g '
             '~/socketstreamingkmeansexperiment_2.12-0.1.jar '
             '192.168.122.121 '
             '10000,10005'
