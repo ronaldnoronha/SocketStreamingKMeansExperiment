@@ -23,7 +23,7 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.streaming.receiver.Receiver
 import org.apache.spark.mllib.linalg.{Vector, Vectors}
 import org.apache.spark.mllib.clustering.StreamingKMeansModel
-import org.apache.spark.util.SizeEstimator
+import org.apache.spark.util.{SizeEstimator, CollectionAccumulator}
 
 import scala.util.Random
 
@@ -58,6 +58,14 @@ object Experiment {
     }
 
     val model = new StreamingKMeansModel(centers,weights)
+    def collectionAccumulator(name:String):CollectionAccumulator[Long] = {
+      val acc = new CollectionAccumulator[Long]
+      ssc.sparkContext.register(acc,name)
+      acc
+    }
+    val time = collectionAccumulator("Time")
+    val rddCounter = collectionAccumulator("RDD Counter")
+//    def collectionAccumulator[T](name : scala.Predef.String) : org.apache.spark.util.CollectionAccumulator[T]
 
     val messages = ssc.socketTextStream(args(0), args(1).toInt, StorageLevel.MEMORY_AND_DISK_SER_2)
     val lines = messages.flatMap(_.split(";"))
@@ -65,17 +73,25 @@ object Experiment {
     val count = ssc.sparkContext.longAccumulator("Counter")
     val size = ssc.sparkContext.longAccumulator("Size Estimator")
 
+
     lines.foreachRDD(rdd => {
       val points = rdd.map(_.split(" ").map(_.toDouble)).map(x=>Vectors.dense(x))
       count.add(points.count)
       size.add(SizeEstimator.estimate(points))
+      rddCounter.add(rdd.count())
+      val time1 = System.currentTimeMillis()
       model.update(points, 1.0, "batches")
+      time.add(System.currentTimeMillis()-time1)
     })
 
     ssc.start()
     ssc.awaitTerminationOrTimeout(60000)
     println("Number of messages: "+ count.value)
     println("Size of the data: "+ size.value)
+
+    for (i <- 0 to time.value.size()-1) {
+      println(rddCounter.value.get(i)+" messages updated in "+time.value.get(i))
+    }
   }
 }
 

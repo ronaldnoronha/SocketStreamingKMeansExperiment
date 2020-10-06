@@ -1,4 +1,7 @@
-[0m[[0m[31merror[0m] [0m[0m/Users/ronnie/Documents/SocketStreamingKMeansExperiment/src/main/scala/Experiment.scala:71:29: org.apache.spark.util.SizeEstimator.type does not take parameters[0m
-[0m[[0m[31merror[0m] [0m[0m      size.add(SizeEstimator(points))[0m
-[0m[[0m[31merror[0m] [0m[0m                            ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/ronnie/Documents/SocketStreamingKMeansExperiment/src/main/scala/Experiment.scala:72:9: messages is already defined as value messages[0m
+[0m[[0m[31merror[0m] [0m[0m    val messages = ssc.udp[0m
+[0m[[0m[31merror[0m] [0m[0m        ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/ronnie/Documents/SocketStreamingKMeansExperiment/src/main/scala/Experiment.scala:72:24: value udp is not a member of org.apache.spark.streaming.StreamingContext[0m
+[0m[[0m[31merror[0m] [0m[0m    val messages = ssc.udp[0m
+[0m[[0m[31merror[0m] [0m[0m                       ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
