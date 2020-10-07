@@ -3,6 +3,7 @@ from datetime import datetime
 import socket #import socket module
 from time import time
 import sys
+from threading import Thread
 
 def createData(n_samples, n_features, centers, std):
     features, target = make_blobs(n_samples = n_samples,
@@ -17,19 +18,19 @@ def createData(n_samples, n_features, centers, std):
     return features, target
 
 def sendMessages(numMsgs, host, port, centers):
-    s = socket.socket()  # Create a socket object
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
     s.bind((host, port))  # Bind to the port
     s.listen()
-
+    totalMsgs = 0
     while True:
         c, addr = s.accept()
         print('Connection received from {}'.format(addr))
         t1 = time()
         features,_ = createData(numMsgs, 3, centers, 0.65)
-        for i in features:
-            message = ' '.join([str(j) for j in i]) + ';'
-            c.send(message.encode())
-        print('{} messages sent from {} in {} seconds'.format(numMsgs, port, time()-t1))
+        message = ';'.join(' '.join([str(j) for j in i]) for i in features)
+        c.send(message.encode('utf-8'))
+        totalMsgs += numMsgs
+        print('{} messages sent from {} in {} seconds'.format(totalMsgs, port, time()-t1))
         c.close()
 
 if __name__ == "__main__":
