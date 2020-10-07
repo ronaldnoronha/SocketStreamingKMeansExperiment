@@ -1,6 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0m/Users/ronnie/Documents/SocketStreamingKMeansExperiment/src/main/scala/Experiment.scala:78:27: type mismatch;[0m
-[0m[[0m[31merror[0m] [0m[0m found   : scala.collection.immutable.IndexedSeq[org.apache.spark.streaming.dstream.ReceiverInputDStream[Nothing]][0m
-[0m[[0m[31merror[0m] [0m[0m required: Seq[org.apache.spark.streaming.dstream.DStream[T]][0m
-[0m[[0m[31merror[0m] [0m[0m    val lines = ssc.union(messages).flatMap(_.split(";"))[0m
-[0m[[0m[31merror[0m] [0m[0m                          ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/ronnie/Documents/SocketStreamingKMeansExperiment/src/main/scala/Experiment.scala:88:14: value print is not a member of org.apache.spark.rdd.RDD[org.apache.spark.mllib.linalg.Vector][0m
+[0m[[0m[31merror[0m] [0m[0m      points.print()[0m
+[0m[[0m[31merror[0m] [0m[0m             ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

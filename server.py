@@ -31,7 +31,6 @@ def sendMessages(numMsgs, host, port, centers):
         c.send(message.encode('utf-8'))
         totalMsgs += numMsgs
         print('{} messages sent from {} in {} seconds'.format(totalMsgs, port, time()-t1))
-        print(message[:1000])
         c.close()
 
 if __name__ == "__main__":

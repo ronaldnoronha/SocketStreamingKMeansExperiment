@@ -90,7 +90,8 @@ def runExperiment(clusters='1'):
             '--master spark://' + str(masterHost) + ':7077 --executor-memory 2g '
             '~/socketstreamingkmeansexperiment_2.12-0.1.jar '
             '192.168.122.121 '
-            '10000,10003'
+            '10000 '
+            '2'
         )
     # transfer logs
     # stopMonitor()
