@@ -91,7 +91,7 @@ object Experiment {
     })
 
     ssc.start()
-    ssc.awaitTerminationOrTimeout(600000)
+    ssc.awaitTerminationOrTimeout(60000)
     println("Number of messages: "+ count.value)
     println("Size of the data: "+ size.value)
 
