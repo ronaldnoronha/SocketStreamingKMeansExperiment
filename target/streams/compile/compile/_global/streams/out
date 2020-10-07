@@ -1,7 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0m/Users/ronnie/Documents/SocketStreamingKMeansExperiment/src/main/scala/Experiment.scala:69:36: value split is not a member of org.apache.spark.streaming.dstream.ReceiverInputDStream[String][0m
-[0m[[0m[31merror[0m] [0m[0m    val lines = messages.flatMap(_.split(";"))[0m
-[0m[[0m[31merror[0m] [0m[0m                                   ^[0m
-[0m[[0m[31merror[0m] [0m[0m/Users/ronnie/Documents/SocketStreamingKMeansExperiment/src/main/scala/Experiment.scala:74:11: value foreachRDD is not a member of scala.collection.immutable.IndexedSeq[Nothing][0m
-[0m[[0m[31merror[0m] [0m[0m    lines.foreachRDD(rdd => {[0m
-[0m[[0m[31merror[0m] [0m[0m          ^[0m
-[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/ronnie/Documents/SocketStreamingKMeansExperiment/src/main/scala/Experiment.scala:88:14: value print is not a member of org.apache.spark.rdd.RDD[org.apache.spark.mllib.linalg.Vector][0m
+[0m[[0m[31merror[0m] [0m[0m      points.print()[0m
+[0m[[0m[31merror[0m] [0m[0m             ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m

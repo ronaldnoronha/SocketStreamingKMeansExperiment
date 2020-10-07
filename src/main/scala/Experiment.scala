@@ -38,10 +38,10 @@ import scala.util.Random
  */
 object Experiment {
   def main(args: Array[String]): Unit = {
-    if (args.length < 2) {
-      System.err.println("Usage: CustomReceiver <hostname> <port>")
-      System.exit(1)
-    }
+//    if (args.length < 2) {
+//      System.err.println("Usage: CustomReceiver <hostname> <port>")
+//      System.exit(1)
+//    }
 
     // Create the context with a 1 second batch size
     val sparkConf = new SparkConf().setAppName("CustomReceiver")
@@ -65,14 +65,14 @@ object Experiment {
     }
     val time = collectionAccumulator("Time")
     val rddCounter = collectionAccumulator("RDD Counter")
-//    def collectionAccumulator[T](name : scala.Predef.String) : org.apache.spark.util.CollectionAccumulator[T]
 
-    val portStart = args(1).split(",")(0).toInt
-    val portEnd = args(1).split(",")(1).toInt
+
+    val portStart = args(1).toInt
+    val numPorts = args(2).toInt
     val host = args(0)
 
-    val messages = (portStart to portEnd).map { i =>
-      ssc.socketTextStream(host, i, StorageLevel.MEMORY_AND_DISK_SER_2)
+    val messages = (1 to numPorts).map { i =>
+      ssc.socketTextStream(host, portStart+i-1, StorageLevel.MEMORY_AND_DISK_SER_2)
     }
 
     val lines = ssc.union(messages).flatMap(_.split(";"))
@@ -89,9 +89,11 @@ object Experiment {
       model.update(points, 1.0, "batches")
       time.add(System.currentTimeMillis()-time1)
     })
-
+    println(lines.getClass)
     ssc.start()
     ssc.awaitTerminationOrTimeout(60000)
+
+
     println("Number of messages: "+ count.value)
     println("Size of the data: "+ size.value)
 
