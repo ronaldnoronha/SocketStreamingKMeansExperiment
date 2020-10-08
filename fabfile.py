@@ -69,21 +69,19 @@ def stop():
     stopSparkCluster()
     stopKafka()
 
-def runExperiment(clusters='1'):
+def runExperiment(clusters='3',numPorts='2'):
     # transfer file
     transfer = Transfer(master)
     kafkaTransfer = Transfer(kafka)
     # Transfer Producer
-    kafkaTransfer.put('./server.py')
-    startKafka()
+    kafkaTransfer.put('./producer.py')
+    startKafka(numPorts)
     # SBT packaging
     os.system('sbt package')
     # start start cluster
     startSparkCluster(clusters)
     # transfer jar
     transfer.put('./target/scala-2.12/socketstreamingkmeansexperiment_2.12-0.1.jar')
-    # print(datetime.now().__str__())
-    # transferFile(clusters)
     master.run(
             'source /etc/profile && cd $SPARK_HOME && bin/spark-submit '
             '--class Experiment '
@@ -91,7 +89,7 @@ def runExperiment(clusters='1'):
             '~/socketstreamingkmeansexperiment_2.12-0.1.jar '
             '192.168.122.121 '
             '10000 '
-            '2'
+            + numPorts
         )
     # transfer logs
     # stopMonitor()
@@ -134,14 +132,14 @@ def transferToKafka(filename):
     transfer = Transfer(kafka)
     transfer.put(filename)
 
-def startKafka():
+def startKafka(numPorts='2'):
     kafka.run('tmux new -d -s socket')
-    kafka.run('tmux send -t socket python3\ ~/server.py\ 100000\ 192.168.122.121 ENTER')
+    kafka.run('tmux send -t socket python3\ ~/producer.py\ 192.168.122.121\ '+numPorts+' ENTER')
     
 def stopKafka():
     kafka.run('tmux kill-session -t socket')
 
-def createFile():
+def createFiles():
     transfer = []
     for connection in slaveConnections:
         transfer.append(Transfer(connection))
