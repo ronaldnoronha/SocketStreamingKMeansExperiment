@@ -1,12 +1,8 @@
 # Import Fabric's API module
-from fabric.api import sudo
-from fabric.operations import reboot
 from fabric2 import Connection, Config
 from invoke import Responder
 from fabric2.transfer import Transfer
 import os
-from time import sleep
-from datetime import datetime
 
 with open('./conf/master', 'r') as f:
     array = f.readline().split()
@@ -73,6 +69,9 @@ def runExperiment(clusters='3',numPorts='2'):
     # transfer file
     transfer = Transfer(master)
     kafkaTransfer = Transfer(kafka)
+    # Start Monitors
+    transferMonitor()
+    startMonitor()
     # Transfer Producer
     kafkaTransfer.put('./producer.py')
     startKafka(numPorts)
@@ -92,18 +91,18 @@ def runExperiment(clusters='3',numPorts='2'):
             + numPorts
         )
     # transfer logs
-    # stopMonitor()
-    # transferLogs()
+    stopMonitor()
+    transferLogs()
     # Restart all VMs
     stop()
     # restartAllVMs()
 
 def startMonitor():
-    for connection in slaveConnections+[master]:
+    for connection in slaveConnections+[master, kafka]:
         connection.run('nohup python3 ./monitor.py $1 >/dev/null 2>&1 &')
 
 def stopMonitor():
-    for connection in slaveConnections+[master]:
+    for connection in slaveConnections+[master, kafka]:
         connection.run('pid=$(cat logs/pid) && kill -SIGTERM $pid')
 
 def transferLogs():
@@ -114,11 +113,12 @@ def transferLogs():
         counter += 1
     transfer = Transfer(master)
     transfer.get('logs/log.csv', 'log_master.csv')
+    transfer = Transfer(kafka)
+    transfer.get('logs/log.csv', 'log_kafka.csv')
 
 
 def transferMonitor():
-    for connection in slaveConnections+[master]:
-        connection.run('rm monitor.py')
+    for connection in slaveConnections+[master, kafka]:
         connection.run('rm -rf logs')
         transfer = Transfer(connection)
         transfer.put('monitor.py')
