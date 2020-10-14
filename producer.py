@@ -19,11 +19,11 @@ def sendMessages(host, port):
             t1 = time()
             c, addr = s.accept()
             print('Connection received from {}'.format(addr))
+            totalFilesSent = 0
             with open(path+i,'r') as f:
-                t2 = time()
                 message = f.readline()
                 c.send(message.encode('utf-8'))
-                print('{} seconds for opening and sending file'.format(time()-t2,port))
+                totalFilesSent += 1
             c.close()
             print('{} seconds to send a file by {} port'.format(time()-t1,port))
 

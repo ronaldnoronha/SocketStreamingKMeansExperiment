@@ -26,6 +26,7 @@ import org.apache.spark.mllib.clustering.StreamingKMeansModel
 import org.apache.spark.util.{SizeEstimator, CollectionAccumulator}
 
 import scala.util.Random
+import java.time.LocalTime
 
 /**
  * Custom Receiver that receives data over a socket. Received bytes are interpreted as
@@ -38,14 +39,11 @@ import scala.util.Random
  */
 object Experiment {
   def main(args: Array[String]): Unit = {
-//    if (args.length < 2) {
-//      System.err.println("Usage: CustomReceiver <hostname> <port>")
-//      System.exit(1)
-//    }
+    println("Application started at: "+LocalTime.now)
 
     // Create the context with a 1 second batch size
     val sparkConf = new SparkConf().setAppName("CustomReceiver")
-    val ssc = new StreamingContext(sparkConf, Seconds(1))
+    val ssc = new StreamingContext(sparkConf, Seconds(args(4).toInt))
 
     val centers:Array[Vector] = new Array[Vector](8)
     for (i <- 0 to centers.length-1) {
@@ -58,14 +56,18 @@ object Experiment {
     }
 
     val model = new StreamingKMeansModel(centers,weights)
+
     def collectionAccumulator(name:String):CollectionAccumulator[Long] = {
       val acc = new CollectionAccumulator[Long]
       ssc.sparkContext.register(acc,name)
       acc
     }
-    val time = collectionAccumulator("Time")
-    val rddCounter = collectionAccumulator("RDD Counter")
 
+    def collectionAccumulatorDouble(name:String):CollectionAccumulator[Double] = {
+      val acc = new CollectionAccumulator[Double]
+      ssc.sparkContext.register(acc,name)
+      acc
+    }
 
     val portStart = args(1).toInt
     val numPorts = args(2).toInt
@@ -77,33 +79,46 @@ object Experiment {
 
     val lines = ssc.union(messages).flatMap(_.split(";"))
 
+    val time = collectionAccumulator("Time")
+    val rddCounter = collectionAccumulator("RDD Counter")
     val count = ssc.sparkContext.longAccumulator("Counter")
     val size = ssc.sparkContext.longAccumulator("Size Estimator")
+
+    val computeCost = collectionAccumulatorDouble("Compute Cost")
+    val trainingCost = collectionAccumulatorDouble("Training Cost")
 
     lines.foreachRDD(rdd => {
       val points = rdd.map(_.split(" ").map(_.toDouble)).map(x=>Vectors.dense(x))
       count.add(points.count)
       size.add(SizeEstimator.estimate(points))
       rddCounter.add(rdd.count())
+
       val time1 = System.currentTimeMillis()
       model.update(points, 1.0, "batches")
       time.add(System.currentTimeMillis()-time1)
-    })
-    println(lines.getClass)
-    ssc.start()
-    ssc.awaitTerminationOrTimeout(60000)
 
+      computeCost.add(model.computeCost(points))
+      trainingCost.add(model.trainingCost)
+    })
+
+    ssc.start()
+    ssc.awaitTerminationOrTimeout(args(3).toInt)
+    println("Application stopped at: "+LocalTime.now)
 
     println("Number of messages: "+ count.value)
     println("Size of the data: "+ size.value)
-
+    var totalUpdateTime = 0L
     for (i <- 0 to time.value.size()-1) {
-      println(rddCounter.value.get(i)+" messages updated in "+time.value.get(i))
+//      println(rddCounter.value.get(i)+" messages updated in "+time.value.get(i))
+//      println(computeCost.value.get(i))
+      totalUpdateTime += time.value.get(i)
     }
-
-    for (i <- model.clusterWeights) {
-      println(i)
-    }
+    println("Total update time: "+ totalUpdateTime)
+//    var totalMessages = 0.0
+//    for (i <- model.clusterWeights) {
+//      totalMessages += i
+//    }
+//    println("Total Messages: "+ totalMessages)
   }
 }
 
