@@ -2,6 +2,7 @@
 from fabric2 import Connection, Config
 from invoke import Responder
 from fabric2.transfer import Transfer
+from datetime import datetime
 import os
 
 with open('./conf/master', 'r') as f:
@@ -65,7 +66,7 @@ def stop():
     stopSparkCluster()
     stopKafka()
 
-def runExperiment(clusters='3',numPorts='2'):
+def runExperiment(clusters='3',numPorts='2',time='60000',executorMem='2g', batchDuration='1'):
     # transfer file
     transfer = Transfer(master)
     kafkaTransfer = Transfer(kafka)
@@ -81,21 +82,28 @@ def runExperiment(clusters='3',numPorts='2'):
     startSparkCluster(clusters)
     # transfer jar
     transfer.put('./target/scala-2.12/socketstreamingkmeansexperiment_2.12-0.1.jar')
-    master.run(
-            'source /etc/profile && cd $SPARK_HOME && bin/spark-submit '
-            '--class Experiment '
-            '--master spark://' + str(masterHost) + ':7077 --executor-memory 2g '
-            '~/socketstreamingkmeansexperiment_2.12-0.1.jar '
-            '192.168.122.121 '
-            '10000 '
-            + numPorts
-        )
-    # transfer logs
-    stopMonitor()
-    transferLogs()
-    # Restart all VMs
-    stop()
-    # restartAllVMs()
+    try:
+        master.run(
+                'source /etc/profile && cd $SPARK_HOME && bin/spark-submit '
+                '--class Experiment '
+                '--master spark://' + str(masterHost) + ':7077 --executor-memory ' + executorMem + ' '
+                '~/socketstreamingkmeansexperiment_2.12-0.1.jar '
+                '192.168.122.121 '
+                '10000 '
+                + numPorts + ' '
+                + time + ' '
+                + batchDuration
+            )
+    except:
+        print('Spark Crashed while running')
+        print('Application stopped at: {}'.format(datetime.now().strftime("%H:%M:%S.%f")))
+    finally:
+        # transfer logs
+        stopMonitor()
+        transferLogs()
+        # Restart all VMs
+        stop()
+        # restartAllVMs()
 
 def startMonitor():
     for connection in slaveConnections+[master, kafka]:
@@ -137,19 +145,15 @@ def startKafka(numPorts='2'):
     kafka.run('tmux send -t socket python3\ ~/producer.py\ 192.168.122.121\ '+numPorts+' ENTER')
     
 def stopKafka():
-    kafka.run('tmux kill-session -t socket')
+    try:
+        kafka.run('tmux kill-session -t socket')
+    except:
+        print('Socket already closed!')
 
 def createFiles():
-    transfer = []
-    for connection in slaveConnections:
-        transfer.append(Transfer(connection))
-    for connection in transfer:
-        connection.put('./centers.txt')
-        connection.put('./createFile.py')
-        connection.put('./transferFile.py')
-    for connection in slaveConnections:
-        connection.run('tmux new -d -s createFile')
-        connection.run('tmux send -t createFile python3\ ~/createFile.py\ 1000000\ 120 ENTER')
+    transfer = Transfer(kafka)
+    transfer.put('createFiles.py')
+    kafka.run('python3 createFiles.py 500 100000 4')
 
 def closeCreateFile():
     for connection in slaveConnections:

@@ -1,0 +1,9 @@
+[info] Loading global plugins from /Users/ronnie/.sbt/1.0/plugins
+[info] Loading project definition from /Users/ronnie/Documents/SocketStreamingKMeansExperiment/project
+[info] Loading settings for project socketstreamingkmeansexperiment from build.sbt ...
+[info] Set current project to SocketStreamingKMeansExperiment (in build file:/Users/ronnie/Documents/SocketStreamingKMeansExperiment/)
+[success] Total time: 1 s, completed 10 Oct 2020, 4:09:55 pm
+starting org.apache.spark.deploy.master.Master, logging to /usr/local/spark/logs/spark-ronald-org.apache.spark.deploy.master.Master-1-ronald-Standard-PC-i440FX-PIIX-1996.out
+starting org.apache.spark.deploy.worker.Worker, logging to /usr/local/spark/logs/spark-ronald-org.apache.spark.deploy.worker.Worker-1-ronald-Standard-PC-i440FX-PIIX-1996.out
+starting org.apache.spark.deploy.worker.Worker, logging to /usr/local/spark/logs/spark-ronald-org.apache.spark.deploy.worker.Worker-1-ronald-Standard-PC-i440FX-PIIX-1996.out
+starting org.apache.spark.deploy.worker.Worker, logging to /usr/local/spark/logs/spark-ronald-org.apache.spark.deploy.worker.Worker-1-ronald-Standard-PC-i440FX-PIIX-1996.out

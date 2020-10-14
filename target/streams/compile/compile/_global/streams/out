@@ -1,4 +1,18 @@
-[0m[[0m[31merror[0m] [0m[0m/Users/ronnie/Documents/SocketStreamingKMeansExperiment/src/main/scala/Experiment.scala:88:14: value print is not a member of org.apache.spark.rdd.RDD[org.apache.spark.mllib.linalg.Vector][0m
-[0m[[0m[31merror[0m] [0m[0m      points.print()[0m
-[0m[[0m[31merror[0m] [0m[0m             ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/ronnie/Documents/SocketStreamingKMeansExperiment/src/main/scala/Experiment.scala:114:7: type mismatch;[0m
+[0m[[0m[31merror[0m] [0m[0m found   : Int[0m
+[0m[[0m[31merror[0m] [0m[0m required: ?{def +(x$1: ? >: Long): ?}[0m
+[0m[[0m[31merror[0m] [0m[0mNote that implicit conversions are not applicable because they are ambiguous:[0m
+[0m[[0m[31merror[0m] [0m[0m both method int2long in object Int of type (x: Int)Long[0m
+[0m[[0m[31merror[0m] [0m[0m and method int2float in object Int of type (x: Int)Float[0m
+[0m[[0m[31merror[0m] [0m[0m are possible conversion functions from Int to ?{def +(x$1: ? >: Long): ?}[0m
+[0m[[0m[31merror[0m] [0m[0m      totalUpdateTime += time.value.get(i)[0m
+[0m[[0m[31merror[0m] [0m[0m      ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/ronnie/Documents/SocketStreamingKMeansExperiment/src/main/scala/Experiment.scala:114:23: overloaded method value + with alternatives:[0m
+[0m[[0m[31merror[0m] [0m[0m  (x: Int)Int <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (x: Char)Int <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (x: Short)Int <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (x: Byte)Int[0m
+[0m[[0m[31merror[0m] [0m[0m cannot be applied to (Long)[0m
+[0m[[0m[31merror[0m] [0m[0m      totalUpdateTime += time.value.get(i)[0m
+[0m[[0m[31merror[0m] [0m[0m                      ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
