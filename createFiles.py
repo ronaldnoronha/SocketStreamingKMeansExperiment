@@ -41,6 +41,9 @@ if __name__ == "__main__":
     centers, _ = createData(8, 3, 8, 0.65)
     threads = [None]*numPorts
 
+    if not os.path.exists('./data/'):
+        os.mkdir('./data')
+
     for i in range(len(threads)):
         threads[i] = Thread(target=createFiles,args=(10000+i,numMsgs,numFiles, centers))
         threads[i].start()
