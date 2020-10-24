@@ -74,7 +74,7 @@ def runExperiment(clusters='3',numPorts='2',time='60000',executorMem='2g', batch
     transferMonitor()
     startMonitor()
     # Transfer Producer
-    producerTransfer.put('./producer.py')
+    producerTransfer.put('./weibullProducer.py')
     startProducer(numPorts)
     # SBT packaging
     os.system('sbt package')
@@ -142,7 +142,7 @@ def transferToProducer(filename):
 
 def startProducer(numPorts='2'):
     producer.run('tmux new -d -s socket')
-    producer.run('tmux send -t socket python3\ ~/producer.py\ 192.168.122.153\ ' + numPorts + ' ENTER')
+    producer.run('tmux send -t socket python3\ ~/weibullProducer.py\ 192.168.122.153\ ' + numPorts + '\ 5.\ 50000\ 1000 ENTER')
     
 def stopProducer():
     try:

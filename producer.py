@@ -3,11 +3,15 @@ from time import time
 import sys
 import os
 from threading import Thread
+import re
+
+def sortedAlphanumeric(data):
+    convert = lambda text: int(text) if text.isdigit() else text.lower()
+    alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ]
+    return sorted(data, key=alphanum_key)
 
 def sendMessages(host, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
-    # if os.system('lsof -i :'+str(port))==0:
-    #     os.system('lsof -i :' + str(port) + ' | awk \'{system(\"kill -9 \" $2)}\'')
     while True:
         try:
             s.bind((host, port))  # Bind to the port
@@ -17,7 +21,7 @@ def sendMessages(host, port):
     # s.bind((host, port))
     s.listen()
     path = 'data/'+str(port)+'/'
-    listFiles = os.listdir(path)
+    listFiles = sortedAlphanumeric(os.listdir(path))
     totalFilesSent = 0
     t1 = time()
     while True:
