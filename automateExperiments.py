@@ -1,14 +1,17 @@
 import os
 import shutil
+import time
 
 listOfExperiments = []
 
-listOfExperiments.append({'numNodes':4, 'numPorts':4, 'time':60000, 'executorMem': '2g', 'batchDuration': 1})
-listOfExperiments.append({'numNodes':4, 'numPorts':4, 'time':180000, 'executorMem': '2g', 'batchDuration': 1})
-listOfExperiments.append({'numNodes':4, 'numPorts':4, 'time':240000, 'executorMem': '2g', 'batchDuration': 1})
-listOfExperiments.append({'numNodes':4, 'numPorts':4, 'time':3000000, 'executorMem': '2g', 'batchDuration': 1})
-listOfExperiments.append({'numNodes':4, 'numPorts':4, 'time':360000, 'executorMem': '2g', 'batchDuration': 1})
-# listOfExperiments.append({'numNodes':4, 'numPorts':4, 'time':60000, 'executorMem': '2g', 'batchDuration': 1})
+
+listOfExperiments.append({'numNodes':3, 'numPorts':2, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
+listOfExperiments.append({'numNodes':4, 'numPorts':2, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
+listOfExperiments.append({'numNodes':5, 'numPorts':2, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
+listOfExperiments.append({'numNodes':6, 'numPorts':2, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
+listOfExperiments.append({'numNodes':4, 'numPorts':3, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
+listOfExperiments.append({'numNodes':5, 'numPorts':3, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
+listOfExperiments.append({'numNodes':6, 'numPorts':3, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
 
 
 if not os.path.exists('results/'):
@@ -34,3 +37,4 @@ if __name__ == "__main__":
         for file in os.listdir():
             if file.endswith('.csv') or file.endswith('.txt'):
                 shutil.move(file, path)
+        # time.sleep(30)

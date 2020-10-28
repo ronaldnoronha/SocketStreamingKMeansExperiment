@@ -1,16 +1,33 @@
+from sklearn.datasets import make_blobs
 import socket
-from time import time, sleep
+from time import time
 import sys
 import os
 from threading import Thread
 import re
+import numpy as np
+
+
 
 def sortedAlphanumeric(data):
     convert = lambda text: int(text) if text.isdigit() else text.lower()
     alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ]
     return sorted(data, key=alphanum_key)
 
-def sendMessages(host, port):
+
+def createData(n_samples, n_features, centers, std):
+    features, target = make_blobs(n_samples = n_samples,
+                                  # two feature variables,
+                                  n_features = n_features,
+                                  # four clusters,
+                                  centers = centers,
+                                  # with .65 cluster standard deviation,
+                                  cluster_std = std,
+                                  # shuffled,
+                                  shuffle = True)
+    return features, target
+
+def sendMessages(host, port, size, centers):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
     while True:
         try:
@@ -19,27 +36,19 @@ def sendMessages(host, port):
         except:
             os.system(repr('lsof -i :' + str(port) + ' | awk \'{system(\"kill -9 \" $2)}\''))
 
-    path = 'data/' + str(port) + '/'
-    listFiles = sortedAlphanumeric(os.listdir(path))
-    totalMessagesSent = 0
-    # Confirm an output log file is removed from the folder
-    # if os.path.isfile('data/_'+str(port)):
-    #     os.remove('data/_'+str(port))
-
     s.listen()
     t1 = time()
-    for i in listFiles:
+    totalMessagesSent = 0
+    for i in size:
         c, addr = s.accept()
-        t2 = time()
         print('Connection received from {}'.format(addr))
-        with open(path+i,'r') as f:
-            message = f.readline()
-            c.send(message.encode('utf-8'))
-            totalMessagesSent += len(message.split(';'))
+        features, _ = createData(i, 3, centers, 0.65)
+        message = ';'.join(' '.join([str(j) for j in i]) for i in features)
+        c.send(message.encode('utf-8'))
         c.close()
-        with open('data/_'+str(port),'a') as f:
-            f.write('{} seconds to send {} messages by {} port\n'.format(time()*1000.0, totalMessagesSent, port))
-        sleep(max(1-time()+t2, 0))
+        totalMessagesSent += i
+        with open('data/_'+str(port),'w') as f:
+            f.write('{} seconds to send {} messages by {} port'.format(time()-t1, totalMessagesSent, port))
 
 
 if __name__ == "__main__":
@@ -49,8 +58,18 @@ if __name__ == "__main__":
     numPorts = int(sys.argv[2])
     threads = [None]*numPorts
 
+    weibullShape = float(sys.argv[3])
+    scale = int(sys.argv[4])
+    numFiles = int(sys.argv[5])
+
+    size = np.random.weibull(weibullShape, numFiles) * scale
+    size = [int(i) for i in size]
+
+    centers, _ = createData(8, 3, 8, 0.65)
+
+
     for i in range(numPorts):
-        threads[i] = Thread(target=sendMessages,args=(host, port+i))
+        threads[i] = Thread(target=sendMessages,args=(host, port+i, size, centers))
         threads[i].start()
 
     for i in threads:

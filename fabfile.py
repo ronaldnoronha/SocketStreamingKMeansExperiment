@@ -24,9 +24,9 @@ with open('./conf/slaves', 'r') as f:
     while array:
         slaveConnections.append(Connection(host=array[0], config=configSlaves, gateway=conn))
         array = f.readline().split()
-with open('./conf/kafka', 'r') as f:
+with open('conf/producer', 'r') as f:
     array = f.readline().split()
-    kafka = Connection(host=array[0], config=Config(overrides={'user': user,
+    producer = Connection(host=array[0], config=Config(overrides={'user': user,
                                                                          'connect_kwargs': {'password': '1'},
                                                                          'sudo': {'password': '1'}}), gateway=conn)
 sudopass = Responder(pattern=r'\[sudo\] password:',
@@ -43,7 +43,7 @@ def startSparkCluster(n='1'):
 
 def stopSparkCluster():
     master.run('source /etc/profile && $SPARK_HOME/sbin/stop-all.sh')
-    # c2.run('cd /usr/local/spark && ./sbin/stop-all.sh')
+
 
 
 def restartAllVMs():
@@ -57,25 +57,25 @@ def restartAllVMs():
     except:
         pass
     try:
-        kafka.sudo('shutdown -r now')
+        producer.sudo('shutdown -r now')
     except:
         pass
 
 
 def stop():
     stopSparkCluster()
-    stopKafka()
+    stopProducer()
 
 def runExperiment(clusters='3',numPorts='2',time='60000',executorMem='2g', batchDuration='1'):
     # transfer file
     transfer = Transfer(master)
-    kafkaTransfer = Transfer(kafka)
+    producerTransfer = Transfer(producer)
     # Start Monitors
     transferMonitor()
     startMonitor()
     # Transfer Producer
-    kafkaTransfer.put('./producer.py')
-    startKafka(numPorts)
+    producerTransfer.put('./producer.py')
+    startProducer(numPorts)
     # SBT packaging
     os.system('sbt package')
     # start start cluster
@@ -88,7 +88,7 @@ def runExperiment(clusters='3',numPorts='2',time='60000',executorMem='2g', batch
                 '--class Experiment '
                 '--master spark://' + str(masterHost) + ':7077 --executor-memory ' + executorMem + ' '
                 '~/socketstreamingkmeansexperiment_2.12-0.1.jar '
-                '192.168.122.121 '
+                '192.168.122.153 '
                 '10000 '
                 + numPorts + ' '
                 + time + ' '
@@ -106,11 +106,11 @@ def runExperiment(clusters='3',numPorts='2',time='60000',executorMem='2g', batch
         # restartAllVMs()
 
 def startMonitor():
-    for connection in slaveConnections+[master, kafka]:
+    for connection in slaveConnections+[master, producer]:
         connection.run('nohup python3 ./monitor.py $1 >/dev/null 2>&1 &')
 
 def stopMonitor():
-    for connection in slaveConnections+[master, kafka]:
+    for connection in slaveConnections+[master, producer]:
         connection.run('pid=$(cat logs/pid) && kill -SIGTERM $pid')
 
 def transferLogs():
@@ -121,12 +121,12 @@ def transferLogs():
         counter += 1
     transfer = Transfer(master)
     transfer.get('logs/log.csv', 'log_master.csv')
-    transfer = Transfer(kafka)
-    transfer.get('logs/log.csv', 'log_kafka.csv')
+    transfer = Transfer(producer)
+    transfer.get('logs/log.csv', 'log_producer.csv')
 
 
 def transferMonitor():
-    for connection in slaveConnections+[master, kafka]:
+    for connection in slaveConnections+[master, producer]:
         connection.run('rm -rf logs')
         transfer = Transfer(connection)
         transfer.put('monitor.py')
@@ -136,24 +136,39 @@ def transferToMaster(filename):
     transfer = Transfer(master)
     transfer.put(filename)
 
-def transferToKafka(filename):
-    transfer = Transfer(kafka)
+def transferToProducer(filename):
+    transfer = Transfer(producer)
     transfer.put(filename)
 
-def startKafka(numPorts='2'):
-    kafka.run('tmux new -d -s socket')
-    kafka.run('tmux send -t socket python3\ ~/producer.py\ 192.168.122.121\ '+numPorts+' ENTER')
-    
-def stopKafka():
+def startProducer(numPorts='2'):
+    producer.run('tmux new -d -s socket')
+    producer.run('tmux send -t socket python3\ ~/producer.py\ 192.168.122.153\ ' + numPorts + ' ENTER')
+    # producer.run('tmux send -t socket python3\ ~/weibullProducer.py\ 192.168.122.153\ ' + numPorts + '\ 5.\ 50000\ 1000 ENTER')
+
+
+
+def stopProducer():
     try:
-        kafka.run('tmux kill-session -t socket')
+        producer.run('tmux kill-session -t socket')
+        transfer = Transfer(producer)
+        transfer.put('./retrieveProducerOutput.py')
+        producer.run('python3 ~/retrieveProducerOutput.py')
+        transfer.get('producerResult.txt')
+        producer.run('rm ~/data/_*')
     except:
         print('Socket already closed!')
 
+
 def createFiles():
-    transfer = Transfer(kafka)
+    transfer = Transfer(producer)
     transfer.put('createFiles.py')
-    kafka.run('python3 createFiles.py 500 100000 4')
+    producer.run('python3 createFiles.py 2500 20000 6')
+
+def createFilesWeibull():
+    transfer = Transfer(producer)
+    transfer.put('createFilesWeibull.py')
+    producer.run('python3 createFilesWeibull.py 5. 50000 6 300')
+
 
 def closeCreateFile():
     for connection in slaveConnections:
@@ -174,3 +189,9 @@ def closeTransferFile(clusters='1'):
         slaveConnections[i].run('tmux kill-session -t transferFile')
         slaveConnections[i].run('rm ~/data/*.txt')
 
+def closeMonitorPs():
+    for connection in slaveConnections+[master, producer]:
+        transfer = Transfer(connection)
+        transfer.put('closeMonitorPs.sh')
+        connection.run('chmod u+x closeMonitorPs.sh')
+        connection.run('./closeMonitorPs.sh')

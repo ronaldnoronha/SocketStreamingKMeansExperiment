@@ -81,6 +81,9 @@ object Experiment {
 
     val time = collectionAccumulator("Time")
     val rddCounter = collectionAccumulator("RDD Counter")
+    val timeStamp = collectionAccumulator("Timestamp")
+
+
     val count = ssc.sparkContext.longAccumulator("Counter")
     val size = ssc.sparkContext.longAccumulator("Size Estimator")
 
@@ -95,8 +98,9 @@ object Experiment {
 
       val time1 = System.currentTimeMillis()
       model.update(points, 1.0, "batches")
-      time.add(System.currentTimeMillis()-time1)
 
+      time.add(System.currentTimeMillis()-time1)
+      timeStamp.add(System.currentTimeMillis())
       computeCost.add(model.computeCost(points))
       trainingCost.add(model.trainingCost)
     })
@@ -107,13 +111,17 @@ object Experiment {
 
     println("Number of messages: "+ count.value)
     println("Size of the data: "+ size.value)
+
     var totalUpdateTime = 0L
     for (i <- 0 to time.value.size()-1) {
-//      println(rddCounter.value.get(i)+" messages updated in "+time.value.get(i))
-//      println(computeCost.value.get(i))
       totalUpdateTime += time.value.get(i)
     }
     println("Total update time: "+ totalUpdateTime)
+    var totalMsgsProcessed = 0L
+    for (i <- 0 to timeStamp.value.size()-1) {
+      totalMsgsProcessed += rddCounter.value.get(i)
+      println("Time elapsed " + timeStamp.value.get(i) + " messages processed " + totalMsgsProcessed)
+    }
 //    var totalMessages = 0.0
 //    for (i <- model.clusterWeights) {
 //      totalMessages += i
