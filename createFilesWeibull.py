@@ -19,8 +19,8 @@ def createData(n_samples, n_features, centers, std):
 
 def createFiles(port, size, centers):
 
-    # path = '/home/ronald/data/'+str(port)
-    path = './'+str(port)
+    path = '/home/ronald/data/'+str(port)
+    # path = './'+str(port)
     if not os.path.exists(path):
         os.mkdir(path)
     t1 = time()

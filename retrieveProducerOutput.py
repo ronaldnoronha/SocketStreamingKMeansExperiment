@@ -7,4 +7,6 @@ if __name__ == "__main__":
             if file.startswith('_'):
                 with open('data/'+file,'r') as f:
                     words = f.readline()
-                    p.write(words+'\n')
+                    while words:
+                        p.write(words)
+                        words = f.readline()

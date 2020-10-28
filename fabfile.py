@@ -74,7 +74,7 @@ def runExperiment(clusters='3',numPorts='2',time='60000',executorMem='2g', batch
     transferMonitor()
     startMonitor()
     # Transfer Producer
-    producerTransfer.put('./weibullProducer.py')
+    producerTransfer.put('./producer.py')
     startProducer(numPorts)
     # SBT packaging
     os.system('sbt package')
@@ -142,8 +142,11 @@ def transferToProducer(filename):
 
 def startProducer(numPorts='2'):
     producer.run('tmux new -d -s socket')
-    producer.run('tmux send -t socket python3\ ~/weibullProducer.py\ 192.168.122.153\ ' + numPorts + '\ 5.\ 50000\ 1000 ENTER')
-    
+    producer.run('tmux send -t socket python3\ ~/producer.py\ 192.168.122.153\ ' + numPorts + ' ENTER')
+    # producer.run('tmux send -t socket python3\ ~/weibullProducer.py\ 192.168.122.153\ ' + numPorts + '\ 5.\ 50000\ 1000 ENTER')
+
+
+
 def stopProducer():
     try:
         producer.run('tmux kill-session -t socket')
@@ -160,6 +163,12 @@ def createFiles():
     transfer = Transfer(producer)
     transfer.put('createFiles.py')
     producer.run('python3 createFiles.py 2500 20000 6')
+
+def createFilesWeibull():
+    transfer = Transfer(producer)
+    transfer.put('createFilesWeibull.py')
+    producer.run('python3 createFilesWeibull.py 5. 50000 6 300')
+
 
 def closeCreateFile():
     for connection in slaveConnections:

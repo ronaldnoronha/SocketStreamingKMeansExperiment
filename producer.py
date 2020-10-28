@@ -1,5 +1,5 @@
 import socket
-from time import time
+from time import time, sleep
 import sys
 import os
 from threading import Thread
@@ -18,24 +18,28 @@ def sendMessages(host, port):
             break
         except:
             os.system(repr('lsof -i :' + str(port) + ' | awk \'{system(\"kill -9 \" $2)}\''))
-    # s.bind((host, port))
-    s.listen()
-    path = 'data/'+str(port)+'/'
-    listFiles = sortedAlphanumeric(os.listdir(path))
-    totalFilesSent = 0
-    t1 = time()
-    while True:
-        for i in listFiles:
-            c, addr = s.accept()
-            print('Connection received from {}'.format(addr))
-            with open(path+i,'r') as f:
-                message = f.readline()
-                c.send(message.encode('utf-8'))
-                totalFilesSent += 1
-            c.close()
-            with open('data/_'+str(port),'w') as f:
-                f.write('{} seconds to send {} files by {} port'.format(time()-t1, totalFilesSent, port))
 
+    path = 'data/' + str(port) + '/'
+    listFiles = sortedAlphanumeric(os.listdir(path))
+    totalMessagesSent = 0
+    # Confirm an output log file is removed from the folder
+    # if os.path.isfile('data/_'+str(port)):
+    #     os.remove('data/_'+str(port))
+
+    s.listen()
+    t1 = time()
+    for i in listFiles:
+        c, addr = s.accept()
+        t2 = time()
+        print('Connection received from {}'.format(addr))
+        with open(path+i,'r') as f:
+            message = f.readline()
+            c.send(message.encode('utf-8'))
+            totalMessagesSent += len(message.split(';'))
+        c.close()
+        with open('data/_'+str(port),'a') as f:
+            f.write('{} seconds to send {} messages by {} port\n'.format(time()*1000.0, totalMessagesSent, port))
+        sleep(max(1-time()+t2, 0))
 
 
 if __name__ == "__main__":
