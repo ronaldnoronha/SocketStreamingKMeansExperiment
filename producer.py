@@ -27,10 +27,11 @@ def sendMessages(host, port):
     #     os.remove('data/_'+str(port))
 
     s.listen()
-    t1 = time()
-    for i in listFiles:
+    t2 = 0
+    for num, i in enumerate(listFiles, start=1):
         c, addr = s.accept()
-        t2 = time()
+        if t2 == 0:
+            t2 = time()
         print('Connection received from {}'.format(addr))
         with open(path+i,'r') as f:
             message = f.readline()
@@ -38,9 +39,8 @@ def sendMessages(host, port):
             totalMessagesSent += len(message.split(';'))
         c.close()
         with open('data/_'+str(port),'a') as f:
-            f.write('{} seconds to send {} messages by {} port\n'.format(time()*1000.0, totalMessagesSent, port))
-        sleep(max(1-time()+t2, 0))
-
+            f.write('{} milliseconds to send {} messages by {} port\n'.format(time()*1000.0, totalMessagesSent, port))
+        sleep(max(num-time()+t2, 0))
 
 if __name__ == "__main__":
 

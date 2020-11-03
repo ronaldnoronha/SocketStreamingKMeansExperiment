@@ -42,7 +42,7 @@ object Experiment {
     println("Application started at: "+LocalTime.now)
 
     // Create the context with a 1 second batch size
-    val sparkConf = new SparkConf().setAppName("CustomReceiver")
+    val sparkConf = new SparkConf().setAppName("StreamingKmeans")
     val ssc = new StreamingContext(sparkConf, Seconds(args(4).toInt))
 
     val centers:Array[Vector] = new Array[Vector](8)

@@ -5,21 +5,22 @@ import time
 listOfExperiments = []
 
 
-listOfExperiments.append({'numNodes':3, 'numPorts':2, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
-listOfExperiments.append({'numNodes':4, 'numPorts':2, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
-listOfExperiments.append({'numNodes':5, 'numPorts':2, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
-listOfExperiments.append({'numNodes':6, 'numPorts':2, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
-listOfExperiments.append({'numNodes':4, 'numPorts':3, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
-listOfExperiments.append({'numNodes':5, 'numPorts':3, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
-listOfExperiments.append({'numNodes':6, 'numPorts':3, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
+listOfExperiments.append({'numNodes':5, 'numPorts':4, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
+listOfExperiments.append({'numNodes':4, 'numPorts':4, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
+listOfExperiments.append({'numNodes':5, 'numPorts':5, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
+# listOfExperiments.append({'numNodes':6, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
 
+# listOfExperiments.append({'numNodes':4, 'numPorts':6, 'time':300000, 'executorMem': '8g', 'batchD uration': 1})
+# listOfExperiments.append({'numNodes':4, 'numPorts':6, 'time':300000, 'executorMem': '12g', 'batchDuration': 1})
+# listOfExperiments.append({'numNodes':2, 'numPorts':5, 'time':300000, 'executorMem': '8g', 'batchDuration': 1})
+# listOfExperiments.append({'numNodes':2, 'numPorts':5, 'time':300000, 'executorMem': '12g', 'batchDuration': 1})
 
 if not os.path.exists('results/'):
     os.makedirs('results')
 
 if __name__ == "__main__":
     for i in listOfExperiments:
-        os.system('fab runExperiment:'+str(i['numNodes'])+','+str(i['numPorts'])+','+str(i['time'])+' > logSpark.txt')
+        os.system('fab runExperiment:'+str(i['numNodes'])+','+str(i['numPorts'])+','+str(i['time'])+','+i['executorMem']+','+str(i['batchDuration'])+' > logSpark.txt')
         print('Creating Folder')
         # Create folder based on the experiment
         path = 'results/'+str(i['numNodes'])+'_'+str(i['numPorts'])+'_'+str(i['time'])+'_'+str(i['executorMem'])+'_'\
