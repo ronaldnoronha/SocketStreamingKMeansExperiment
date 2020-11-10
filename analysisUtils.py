@@ -190,4 +190,38 @@ def getMonitorData(path, VM):
 
         return df
 
+def getQueue(path):
+    df = getProcessingResults(path)
+    time = df['time']
+    timeDelta = [(time[i]-time[0]).value for i in range(0,len(time))]
+    df['time'] = timeDelta
+    df['queue'] = df['messagesSent']-df['messagesProcessed']
+    df = df.drop(columns=['messagesSent', 'messagesProcessed'])
+    return df
+
+def getLatency(path):
+    dfConcat = getProcessingResults(path)
+    time = dfConcat['time']
+    messagesProcessed = dfConcat['messagesProcessed']
+    messagesProcessed = [messagesProcessed[0]]+[messagesProcessed[i]-messagesProcessed[i-1] for i in range(1,len(messagesProcessed))]
+    messagesSent = dfConcat['messagesSent']
+    messagesSent = [messagesSent[0]]+[messagesSent[i]-messagesSent[i-1] for i in range(1,len(messagesSent))]
+
+    latency = []
+    for idx,i in enumerate(messagesProcessed):
+        tmp = 0
+        if i>0:
+            for jdx, j in enumerate(messagesSent):
+                if j>=i:
+                    messagesSent[jdx]-=i
+                    tmp += i*(time[idx]-time[jdx]).value
+                    break
+                else:
+                    tmp += j*(time[idx]-time[jdx]).value
+                    messagesSent[jdx]-=j
+                    i-=j
+        latency.append(tmp)
+    return sum(latency)/sum(messagesProcessed)*10**(-9)
+
+
 

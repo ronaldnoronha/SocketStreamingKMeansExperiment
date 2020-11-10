@@ -145,8 +145,6 @@ def startProducer(numPorts='2'):
     producer.run('tmux send -t socket python3\ ~/producer.py\ 192.168.122.153\ ' + numPorts + ' ENTER')
     # producer.run('tmux send -t socket python3\ ~/weibullProducer.py\ 192.168.122.153\ ' + numPorts + '\ 5.\ 50000\ 1000 ENTER')
 
-
-
 def stopProducer():
     try:
         producer.run('tmux kill-session -t socket')
@@ -167,7 +165,7 @@ def createFiles():
 def createFilesWeibull():
     transfer = Transfer(producer)
     transfer.put('createFilesWeibull.py')
-    producer.run('python3 createFilesWeibull.py 5. 50000 6 300')
+    producer.run('python3 createFilesWeibull.py 5. 25000 6 300')
 
 
 def closeCreateFile():
@@ -195,3 +193,7 @@ def closeMonitorPs():
         transfer.put('closeMonitorPs.sh')
         connection.run('chmod u+x closeMonitorPs.sh')
         connection.run('./closeMonitorPs.sh')
+
+def retreiveProducerOutput():
+    transfer = Transfer(master)
+    transfer.get('/home/ronald/tmp/spark-events/app-20201105205551-0000')

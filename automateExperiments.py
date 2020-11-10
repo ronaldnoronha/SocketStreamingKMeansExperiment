@@ -5,15 +5,14 @@ import time
 listOfExperiments = []
 
 
-listOfExperiments.append({'numNodes':5, 'numPorts':4, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
-listOfExperiments.append({'numNodes':4, 'numPorts':4, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
-listOfExperiments.append({'numNodes':5, 'numPorts':5, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
-# listOfExperiments.append({'numNodes':6, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 1})
+listOfExperiments.append({'numNodes':1, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
+listOfExperiments.append({'numNodes':2, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
+listOfExperiments.append({'numNodes':3, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
+listOfExperiments.append({'numNodes':4, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
+listOfExperiments.append({'numNodes':5, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
+listOfExperiments.append({'numNodes':6, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
 
-# listOfExperiments.append({'numNodes':4, 'numPorts':6, 'time':300000, 'executorMem': '8g', 'batchD uration': 1})
-# listOfExperiments.append({'numNodes':4, 'numPorts':6, 'time':300000, 'executorMem': '12g', 'batchDuration': 1})
-# listOfExperiments.append({'numNodes':2, 'numPorts':5, 'time':300000, 'executorMem': '8g', 'batchDuration': 1})
-# listOfExperiments.append({'numNodes':2, 'numPorts':5, 'time':300000, 'executorMem': '12g', 'batchDuration': 1})
+
 
 if not os.path.exists('results/'):
     os.makedirs('results')
