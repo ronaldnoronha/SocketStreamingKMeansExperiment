@@ -6,11 +6,11 @@ listOfExperiments = []
 
 
 listOfExperiments.append({'numNodes':1, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
-listOfExperiments.append({'numNodes':2, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
-listOfExperiments.append({'numNodes':3, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
-listOfExperiments.append({'numNodes':4, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
-listOfExperiments.append({'numNodes':5, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
-listOfExperiments.append({'numNodes':6, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
+# listOfExperiments.append({'numNodes':2, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
+# listOfExperiments.append({'numNodes':3, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
+# listOfExperiments.append({'numNodes':4, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
+# listOfExperiments.append({'numNodes':5, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
+# listOfExperiments.append({'numNodes':6, 'numPorts':6, 'time':300000, 'executorMem': '2g', 'batchDuration': 30})
 
 
 
