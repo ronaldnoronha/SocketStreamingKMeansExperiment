@@ -3,7 +3,7 @@ from time import time
 import sys
 from threading import Thread
 import os
-import numpy as np
+    import numpy as np
 
 def createData(n_samples, n_features, centers, std):
     features, target = make_blobs(n_samples = n_samples,

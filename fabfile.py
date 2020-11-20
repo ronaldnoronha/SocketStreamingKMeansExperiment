@@ -136,6 +136,10 @@ def transferToMaster(filename):
     transfer = Transfer(master)
     transfer.put(filename)
 
+def transferFromMaster(filename):
+    transfer = Transfer(master)
+    transfer.get(filename)
+
 def transferToProducer(filename):
     transfer = Transfer(producer)
     transfer.put(filename)
@@ -165,7 +169,7 @@ def createFiles():
 def createFilesWeibull():
     transfer = Transfer(producer)
     transfer.put('createFilesWeibull.py')
-    producer.run('python3 createFilesWeibull.py 5. 25000 6 300')
+    producer.run('python3 createFilesWeibull.py 10. 50000 6 300')
 
 
 def closeCreateFile():
@@ -197,3 +201,11 @@ def closeMonitorPs():
 def retreiveProducerOutput():
     transfer = Transfer(master)
     transfer.get('/home/ronald/tmp/spark-events/app-20201105205551-0000')
+
+def transferFromServer(filename):
+    transfer = Transfer(conn)
+    transfer.get(filename)
+
+def transferFromSlave(filename):
+    transfer = Transfer(slaveConnections[0])
+    transfer.get(filename)
